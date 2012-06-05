@@ -32,7 +32,7 @@
     }
   };
   
-  var pusher = new Pusher('9acedbff791822b0e851');
+  var pusher = new Pusher('');
   pusher.connection.bind('state_change', function( change ) {
     var el = $('.connection-status');
     el.removeClass( change.previous );

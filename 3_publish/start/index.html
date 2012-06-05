@@ -33,7 +33,7 @@
     }
   };
   
-  var pusher = new Pusher('9acedbff791822b0e851');
+  var pusher = new Pusher('');
   pusher.connection.bind('state_change', function( change ) {
     var el = $('.connection-status');
     el.removeClass( change.previous );
@@ -44,7 +44,8 @@
   channel.bind( 'new_message', addMessage );
   
   function addMessage( data ) {
-    var li = $('<li class="ui-li ui-li-static ui-body-c">' + data.text + '</li>');
+    var li = $('<li class="ui-li ui-li-static ui-body-c"></li>');
+    li.text( data.text );
     li.hide();
     $('#messages').append(li);
     li.slideDown();
