@@ -12,11 +12,11 @@
   border-radius: 20px;
 }
 
-.connecting {
+.connection-status.connecting {
   background-color: orange;
 }
 
-.connected {
+.connection-status.connected {
   background-color: green;
 }
 
