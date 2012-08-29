@@ -1,5 +1,6 @@
 <?php
 include 'config.php';
+include_once 'functions.php';
 ?>
 
 <!DOCTYPE html>
@@ -11,12 +12,16 @@ include 'config.php';
 	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
 	<script>
-  var CONFIG = {
-    PUSHER: {
-      APP_KEY: "<?php echo( APP_KEY ); ?>",
-      CHANNEL_NAME: "<?php echo( CHANNEL_NAME ); ?>"
-    }
-  };
+    var CONFIG = {
+      PUSHER: {
+        APP_KEY: "<?php echo( APP_KEY ); ?>",
+        CHANNEL_NAME: "<?php echo( CHANNEL_NAME ); ?>"
+      }
+    };
+	  
+	  var USER = {
+	    NAME: "<?php echo( get_username() ); ?>"
+	  };
 	</script>
 	
 	<link rel="stylesheet" href="css/styles.css" type="text/css" />
@@ -36,6 +41,7 @@ include 'config.php';
 		
     <label for="textarea" class="ui-hidden-accessible">Message:</label>
   	<textarea name="user_message" id="user_message" placeholder="Message"></textarea>
+  	<div id="activity"></div>
   	
   	<a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>
 

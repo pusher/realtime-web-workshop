@@ -13,7 +13,8 @@ include 'config.php';
 	<script>
 	  var CONFIG = {
 	    PUSHER: {
-	      APP_KEY: "<?php echo( APP_KEY ); ?>"
+	      APP_KEY: "<?php echo( APP_KEY ); ?>",
+	      CHANNEL_NAME: "<?php echo( CHANNEL_NAME ); ?>"
 	    }
 	  };
 	</script>

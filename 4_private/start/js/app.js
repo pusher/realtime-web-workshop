@@ -13,7 +13,7 @@
     el.addClass( change.current );
   });
 
-  var channel = pusher.subscribe( 'messages' );
+  var channel = pusher.subscribe( CONFIG.PUSHER.CHANNEL_NAME );
   channel.bind( 'new_message', addMessage );
 
   function addMessage( data ) {
