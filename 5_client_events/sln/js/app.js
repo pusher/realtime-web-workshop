@@ -1,4 +1,4 @@
-( function( window, Pusher, $) {
+( function( window, Pusher, $ ) {
   
   Pusher.log = function( msg ) {
     if( window.console && window.console.log ) {
@@ -8,6 +8,7 @@
   
   Pusher.channel_auth_endpoint = 'auth.php';
 
+  // Connect
   var pusher = new Pusher( CONFIG.PUSHER.APP_KEY );
   pusher.connection.bind('state_change', function( change ) {
     var el = $('.connection-status');
@@ -15,7 +16,10 @@
     el.addClass( change.current );
   });
 
+  // Subscribe to messages channel
   var channel = pusher.subscribe( CONFIG.PUSHER.CHANNEL_NAME );
+
+  // Receiving messages
   channel.bind( 'new_message', addMessage );
 
   function addMessage( data ) {
@@ -25,12 +29,8 @@
     $('#messages').append(li);
     li.slideDown();
   }
-
-  $( function() {
-    $('#send_btn').click( handleClick );
-    $('#user_message').keyup( userTyping );    
-  } );
   
+  // Sending messages
   function handleClick() {  
     var userMessageEl = $('#user_message');
     var message = $.trim( userMessageEl.val() );
@@ -51,6 +51,7 @@
     return false;
   }
   
+  // Sending client events
   var typingTimeout = null;
   function userTyping() {
     
@@ -80,6 +81,7 @@
                                       } );
   }
   
+  // Receiving client events
   channel.bind( 'client-typing', handleTyping );
   function handleTyping( data ) {
     if( data.typing ) {
@@ -92,5 +94,11 @@
       $("#activity").text( '' );
     }
   }
+
+  // Init - bind to UI events
+  $( function() {
+    $('#send_btn').click( handleClick );
+    $('#user_message').keyup( userTyping );    
+  } );
   
 })( window, window['Pusher'], jQuery );

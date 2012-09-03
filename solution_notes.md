@@ -332,109 +332,298 @@ http://www.leggetter.co.uk/pres/at-t_bootstrap/pres/
   1. Consider if you'd be better sending events via your server - validate, authenticate (again) and sanitize
   2. Upon receipt of the message in your client application do validation and sanitization.
     
-  * Show client events being enabled in the app dashboard
-  
-  * Since I want messages to go via the server so I can store them in the DB for later access I'm not going to change the existing code to use client events. Instead I'm going to use client events for events that add value, but aren't core to my application e.g. "Phil is typing" or other fun events. You can of course use for more important events.
-  
-  * Add `get_username` function to functions.php
-  
-      function get_username() {
-        $username = $_GET['user'];
-        if( !$username ) {
-          $username = uniqid('Guest_');
-        }
-        return $username;
+* Show client events being enabled in the app dashboard
+
+* Since I want messages to go via the server so I can store them in the DB for later access I'm not going to change the existing code to use client events. Instead I'm going to use client events for events that add value, but aren't core to my application e.g. "Phil is typing" or other fun events. You can of course use for more important events.
+
+* Add `get_username` function to functions.php
+
+    function get_username() {
+      $username = uniqid('Guest_');
+      if( isset( $_GET[ 'user' ] ) ) {
+        $username = $_GET[ 'user' ];
       }
-      
-  * Include functions.php in index.php
-  
-      include_once 'functions.php';
-      
-  * Add user data variable so data is accessible through JavaScript:
-  
-      var USER = {
-  	    NAME: "<?php echo( get_username() ); ?>"
-  	  };
-  
-  * Send "Phil is typing"
-    * Detect mousedown events in the textarea and if state is not already 'client-typing' trigger a client event
+      return $username;
+    }
     
-          $('#user_message').mousedown( userTyping );
+* Include functions.php in index.php
+
+    include_once 'functions.php';
+    
+* Add user data variable so data is accessible through JavaScript:
+
+    var USER = {
+	    NAME: "<?php echo( get_username() ); ?>"
+	  };
+
+* Send "Phil is typing"
+  * Detect mousedown events in the textarea and if state is not already 'client-typing' trigger a client event
+  
+        $('#user_message').mousedown( userTyping );
+        
+        function userTyping() {
           
-          function userTyping() {
-            
-          }  
-    
-    * setInterval to clear down if triggered
-    * on further mouse down if state is already typing clear and restart timeout    
-    
-          var typingTimeout = null;
-          function userTyping() {
-
-            var el = $( this );
-
-            if( !typingTimeout ) {
-              var textEntered = ( $.trim( el.val() ).length > 0 );
-              sendTypingEvent( true, textEntered );
-            }
-            else {
-              window.clearTimeout( typingTimeout );
-              typingTimeout = null;
-            }
-
-            typingTimeout = window.setTimeout( function() {
-              var textEntered = ( $.trim( el.val() ).length > 0 );
-              sendTypingEvent( false, textEntered );
-              typingTimeout = null;
-            }, 3000);
-          }
-
-          function sendTypingEvent( typing, enteredText ) {
-            channel.trigger( 'client-typing', {
-                                                username: USER.NAME,
-                                                typing: typing,
-                                                enteredText: enteredText
-                                              } );
-          }
-    
-  * Check JavaScript console and Pusher Debug Console
+        }  
   
-  * Add UI element
+  * setInterval to clear down if triggered
+  * on further mouse down if state is already typing clear and restart timeout    
   
-        <div id="activity"></div>
-  
-  * Update code to receive client events
-    * bind to `client-typing` events
-    * Check the content of the events - they are client events!
-    * Update UI to show who is typing - could be multiples
-    
-        channel.bind( 'client-typing', handleTyping );
-        function handleTyping( data ) {
-          if( data.typing ) {
-            $("#activity").text( data.username + ' is typing' );
-          }
-          else if( data.enteredText ) {
-            $("#activity").text( data.username + ' has entered text' );
+        var typingTimeout = null;
+        function userTyping() {
+
+          var el = $( this );
+
+          if( !typingTimeout ) {
+            var textEntered = ( $.trim( el.val() ).length > 0 );
+            sendTypingEvent( true, textEntered );
           }
           else {
-            $("#activity").text( '' );
+            window.clearTimeout( typingTimeout );
+            typingTimeout = null;
           }
+
+          typingTimeout = window.setTimeout( function() {
+            var textEntered = ( $.trim( el.val() ).length > 0 );
+            sendTypingEvent( false, textEntered );
+            typingTimeout = null;
+          }, 3000);
         }
-        
-  * Update AJAX callback to sent clear user activity edge-case:
-  
-        success: function() {
-          userMessageEl.val('');
-          sendTypingEvent( false, false );
-        }    
-  
-## Ex5. Presence
 
-  * Presence provide a way of determining who is subscribed to a channel. They also provide events whenever a user joins or leaves a channel.
-  * Presence are extensions of Private channels so require authentication.
-  * Part of the authentication process is to give your app the ability to provide additional information about the user e.g. username
+        function sendTypingEvent( typing, enteredText ) {
+          channel.trigger( 'client-typing', {
+                                              username: USER.NAME,
+                                              typing: typing,
+                                              enteredText: enteredText
+                                            } );
+        }
+  
+* Check JavaScript console and Pusher Debug Console
 
-  * Use presence to see who's in the app.
-    * Update the app to use a `presence-` prefix
-    * Check JS console and Pusher Debug Console to see what's happening
-    * Update the app server code to 
+* Add UI element
+
+      <div id="activity"></div>
+
+* Update code to receive client events
+  * bind to `client-typing` events
+  * Check the content of the events - they are client events!
+  * Update UI to show who is typing - could be multiples
+  
+      channel.bind( 'client-typing', handleTyping );
+      function handleTyping( data ) {
+        if( data.typing ) {
+          $("#activity").text( data.username + ' is typing' );
+        }
+        else if( data.enteredText ) {
+          $("#activity").text( data.username + ' has entered text' );
+        }
+        else {
+          $("#activity").text( '' );
+        }
+      }
+      
+* Update AJAX callback to sent clear user activity edge-case:
+
+      success: function() {
+        userMessageEl.val('');
+        sendTypingEvent( false, false );
+      }    
+  
+## Ex6. Presence
+
+* Presence provide a way of determining who is subscribed to a channel. They also provide events whenever a user joins or leaves a channel.
+* Presence are extensions of Private channels so require authentication.
+* Part of the authentication process is to give your app the ability to provide additional information about the user e.g. username
+
+* Use presence to see who's in the app.
+
+* Update the app to use a `presence-` prefix in config.php
+
+      define('CHANNEL_NAME', 'presence-messages');
+
+  * Check JS console and Pusher Debug Console to see what's happening
+    * Syntax error right now.
+
+* Update `auth.php` to handle presence authentication.
+
+      $user_id = get_username(); 
+      $user_info = array(
+        'twitter_id' => get_twitter_id()
+      );
+
+      $auth = $pusher->presence_auth( $channel_name, $socket_id, $user_id, $user_info );
+
+* As above, we'll need a new `get_twitter_id()` function:
+
+       function get_twitter_id() {
+         $twitter_id = null;
+         if( isset( $_GET[ 'twitter' ] ) ) {
+           $twitter_id = $_GET[ 'twitter' ];
+         }
+         return $twitter_id;
+       }
+
+* run app with `user` and `twitter` in URL e.g. http://localhost/pusher-dev/git/realtime-web-workshop/6_presence/sln/?auth=1&user=Phil&twitter=leggetter
+  * Information not available since it's only available on initial page load. We need to store in user session.
+
+* Add session support
+
+  * Update `config.php` - top line:
+
+        session_start();
+
+  * Update `functions.php` to use `$_SESSION` = refactor code:
+
+         function get_username() {
+           return get_value( 'user', uniqid('Guest_') );
+           
+         }
+
+         function get_twitter_id() {
+            return get_value( 'twitter', null );
+         }
+
+         function get_value( $key, $default_value = null ) {
+           $value = $default_value;
+            if( isset( $_SESSION[ $key ] ) ) {
+              $value = $_SESSION[ $key ];
+            }
+            else if( isset( $_GET[ $key ] ) ) {
+              $value = $_GET[ $key ];
+              $_SESSION[ $key ] = $value;
+            }
+            return $value;
+         }
+
+  * Not saved in SESSION until accessed so also access `twitter` in `USER` JavaScript variable.
+
+          var USER = {
+            NAME: "<?php echo( get_username() ); ?>",
+            TWITTER: "<?php echo( get_twitter_id() ); ?>"
+          };
+
+  * Show debug console. See `pusher:subscription_succeeded` event. We can `bind` to that event on the channel to receive an initial list of users subscribed to the channel.
+
+* Create area of UI to show 'Online Users'
+
+  * index.php - add col divs:
+
+        <div class="col1">
+          <h2>Messages</h2>
+          <ul id="messages" data-role="listview" class="ui-listview"></ul>
+            
+          <label for="textarea" class="ui-hidden-accessible">Message:</label>
+          <textarea name="user_message" id="user_message" placeholder="Message"></textarea>
+          <div id="activity"></div>
+            
+          <a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>
+        </div>
+
+        <div class="col2">
+          <h3>Online</h3>
+
+          <ul id="users">
+            <li>
+              <img src="http://twitter.com/api/users/profile_image/leggetter" alt="Phil" />
+            </li>                     
+          </ul>
+
+        </div>
+
+  * and styles.css updated:
+
+        .col1 {
+          float: left;
+          width: 75%;
+        }
+
+        .col2 {
+          float: left;
+          width: 25%;
+          text-align: center;
+        }
+
+        .col2 ul {
+          padding: 0;
+          list-style: none;
+        }
+
+
+* Bind to `pusher:subscription_succeeded` for initial list
+
+  * app.js to bind and display in UI
+
+        channel.bind( 'pusher:subscription_succeeded', getOnlineUsers );
+
+        function getOnlineUsers( members ) {
+          members.each( addMember );
+        }
+
+        function addMember( member ) {
+          var img = $( '<img>' )
+          img.attr( 'alt', member.id )
+          if( member.info.twitter_id ) {
+            img.attr( 'src', 'http://twitter.com/api/users/profile_image/' + member.info.twitter_id );
+          }
+
+          var li = $( '<li>' );
+          li.attr( 'title', member.id )
+          li.append( img );
+          $( '#users' ).append( li );
+        }
+
+  * Update style.css:
+
+        #users li {
+          height: 48px;
+          line-height: 48px;
+        }
+
+        #users li img {
+          width: 48px;
+          height: 48px;
+        }
+
+* Bind to `pusher:member_added`
+
+      channel.bind( 'pusher:member_added', addMember );
+
+* Bind to `pusher:member_removed`
+
+      channel.bind( 'pusher:member_removed', removeMember );
+
+      function removeMember( member ) {
+        var li = $( '#users li[title=' + member.id + ']');
+        li.slideUp( function() { li.remove() } );
+      }
+
+## Ex.7 WebHooks
+
+* WebHooks are used to expose some of the Pusher internal working and state about your application.
+* They offer a way of having an endpoint called whenever certain application events occur in Pusher
+  * Channel existence: Channel occupied and vacated
+  * Presence channel events: member_addeda and member_removed
+
+* To use WebHooks you need to turn them on in your applications Pusher dashboard
+  * Show turning on settings
+  * To start off with use Requestb.in as the endpoint - we'll show this in use soon.
+
+* Tooling
+  * Developing with WebHooks can be quite tricky. Luckily there are a number of tools that can make this experience easier:
+    * Pusher debug console:
+      * Open up debug console in new Window: http://app.pusherapp.com/apps/25469/debug
+      * Navigate to API access page (http://app.pusherapp.com/apps/25469/api_access)
+      * Will see 'WebHook Sent' event
+      * Also, close and then re-open app - will see events
+    * Requestb.in - http://requestb.in/
+      * View Requestb.in results - will see POST events
+    * localtunnel
+      * For windows version see: http://stackoverflow.com/questions/3271441/something-compareable-to-localtunnel-for-windows
+      * We'll use this during development.
+
+* Create webhook.php
+
+TODO: complete WebHooks
+
+
+
+

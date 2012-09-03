@@ -5,10 +5,10 @@
  }
  
  function get_username() {
-   $username = $_GET['user'];
-   if( !$username ) {
-     $username = uniqid('Guest_');
+   $username = uniqid('Guest_');
+   if( isset( $_GET[ 'user' ] ) ) {
+     $username = $_GET[ 'user' ];
    }
    return $username;
  }
- ?>
+?>
