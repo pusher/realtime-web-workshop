@@ -622,6 +622,46 @@ http://www.leggetter.co.uk/pres/at-t_bootstrap/pres/
 
 * Create webhook.php
 
+* Use localtunnel to test:
+  * type `localtunnel 80` in the terminal
+  * copy URL that's output and put in WebHooks settings. Don't forget to put in the full path to the WebHooks URL
+  * Test works by:
+    1. showing the debug console
+    2. Close/open application to see the WebHook event in the console
+    3. Update `webhook.php` to throw an error.
+    4. Close/open application and see 'WebHook Failed' in console
+
+* Update webhook.php with real code:
+  * include `config.php`
+  * Take code from http://pusher.com/docs/webhooks#lang=php
+
+        <?php
+          include 'config.php';
+
+          $app_secret = APP_SECRET;
+
+          $app_key = $_SERVER ['X-Pusher-Key']; 
+          $webhook_signature = $_SERVER ['X-Pusher-Signature'];
+          
+          $body = file_get_contents('php://input');
+
+          $expected_signature = hash_hmac( 'sha256', $body, $app_secret, false );
+
+          if($webhook_signature == $expected_signature) {
+            $payload = json_decode($body);
+            foreach($payload['events'] as &$event) {
+              // do something with the event
+            }
+
+            header("Status: 200 OK");
+          }
+          else {
+            header("Status: 401 Not authenticated");
+          }
+        ?>
+
+* TODO: What do you do in "do something with the event"
+
 TODO: complete WebHooks
 
 

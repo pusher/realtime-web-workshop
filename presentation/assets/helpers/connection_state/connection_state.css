@@ -1,0 +1,15 @@
+/* connection state */
+.pusher-connection-state {
+  position: fixed;
+  display: block;
+  top: 0;
+  left: 25%;
+  height: 5px;
+  width: 50%;
+  background-color: red;
+  z-index: 10000;
+}
+
+.pusher-connection-state.connected {
+  background-color: green;
+}
