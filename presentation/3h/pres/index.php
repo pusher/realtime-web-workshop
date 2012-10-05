@@ -284,7 +284,9 @@ ws.onclose = function(ev) {};
 <section class="slide markdown" id="pusher-library">
 ## Pusher JavaScript library
 
-<pre class="js">
+<pre class="html">
+&lt;script src="http://js.pusher.com/1.12/pusher.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
 var pusher = new Pusher( 'app_key' );
 
 pusher.connection.bind( 'connected', function() {
@@ -295,7 +297,7 @@ pusher.connection.bind( 'state_change', function( state ) {
   var previousState = state.previous;
   var currentState = state.current;
 });
-</code>
+&lt;/script&gt;
 </pre>
 
 </section>

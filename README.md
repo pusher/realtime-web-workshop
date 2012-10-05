@@ -70,7 +70,7 @@ In this exercise we connect to Pusher and display a connection indicator to the 
     
     * Create `styles.css` for CSS
 
-        .connection-status {
+          .connection-status {
             position: fixed;
             display: block;
             right: 0;
@@ -82,15 +82,15 @@ In this exercise we connect to Pusher and display a connection indicator to the 
             -webkit-border-radius: 20px;
             -moz-border-radius: 20px;
             border-radius: 20px;
-        }
+          }
 
-        .connection-status.connecting {
+          .connection-status.connecting {
             background-color: orange;
-        }
+          }
         
-        .connection-status.connected {
+          .connection-status.connected {
             background-color: green;
-        }
+          }
 
 * Include CSS file       
     
@@ -211,60 +211,60 @@ The most obvious next step would be to publish data from JavaScript. But remembe
      
 2. Create an input field and button in the UI to send the data via the server to be validated to be published.
 
-  * Create new markup:
+   * Create new markup:
   
-        <label for="textarea" class="ui-hidden-accessible">Message:</label>
-    	<textarea name="user_message" id="user_message" placeholder="Message"></textarea>
+         <label for="textarea" class="ui-hidden-accessible">Message:</label>
+    	 <textarea name="user_message" id="user_message" placeholder="Message"></textarea>
+         
+    	 <a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>     
 
-    	<a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>     
-
-  * Update the messages CSS:
+   * Update the messages CSS:
       
-        #messages {
-          min-height: 100px;
-          max-height: 200px;
-          overflow: auto;
-          margin-bottom: 20px;
-          border-bottom: 2px solid #ccc;
-        }
+         #messages {
+           min-height: 100px;
+           max-height: 200px;
+           overflow: auto;
+           margin-bottom: 20px;
+           border-bottom: 2px solid #ccc;
+         }
       
-  * Create the JavaScript to handle the button click end send the data via AJAX:
+   * Create the JavaScript to handle the button click end send the data via AJAX:
   
-        $( function() {
-          $('#send_btn').click( handleClick );    
-        } );
-            
-        function handleClick() {  
-          var userMessageEl = $('#user_message');
-          var message = $.trim( userMessageEl.val() );
-          if( message ) {
-            $.ajax( {
-              url: 'new_message.php',
-              type: 'post',
-              data: {
-                text: message
-              },
-              success: function() {
-                userMessageEl.val('');
+            $( function() {
+              $('#send_btn').click( handleClick );    
+            } );
+                
+            function handleClick() {  
+              var userMessageEl = $('#user_message');
+              var message = $.trim( userMessageEl.val() );
+              if( message ) {
+                $.ajax( {
+                  url: 'new_message.php',
+                  type: 'post',
+                  data: {
+                    text: message
+                  },
+                  success: function() {
+                    userMessageEl.val('');
+                  }
+                });
               }
-            });
-          }
-          
-          return false;
-        }
+              
+              return false;
+            }
       
-  * Update `new_message.php` to get the `POST` `text` parameter that was posted. Put scaffolding in place to verify the data:
+   * Update `new_message.php` to get the `POST` `text` parameter that was posted. Put scaffolding in place to verify the data:
   
-        $text = $_POST['text'];
+         $text = $_POST['text'];
 
-        if( verify_message( $text ) ) {
-          $pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
-          $pusher->trigger( 'messages', 'new_message', array('text' => $text) );
-        }
+         if( verify_message( $text ) ) {
+           $pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
+           $pusher->trigger( 'messages', 'new_message', array('text' => $text) );
+         }
 
-        function verify_message() {
-          return true;
-        }
+         function verify_message() {
+           return true;
+         }
 
 ## Exercise 4 - Private Channels / Authenticating Users
 
@@ -318,21 +318,21 @@ When you want to restrict access to who can subscribe to a channel you use [priv
 
 ### Steps
   
-* Change channel subscription to 'private-' prefix. If using PHP then this can can be made in `config.php`:
+1. Change channel subscription to 'private-' prefix. If using PHP then this can can be made in `config.php`:
 
       define('CHANNEL_NAME', 'private-messages');
 
-* Run the application and have a look at the network tab in your browser development tools. 
+2. Run the application and have a look at the network tab in your browser development tools. 
    * View auth call in network tab.
    * View JS Console logging which indicates authentication failure.
   
-* Add auth endpoint. By default this will be `/pusher/auth` but you can set your own using `Pusher.channel_auth_endpoint`. If you are using PHP you can do the following and create an `auth.php` file located relative to your main application file:
+3. Add auth endpoint. By default this will be `/pusher/auth` but you can set your own using `Pusher.channel_auth_endpoint`. If you are using PHP you can do the following and create an `auth.php` file located relative to your main application file:
   
        Pusher.channel_auth_endpoint = 'auth.php';
   
-* *Note:* You can bind to the `pusher:subscription_error` event if you wanted to detect subscription failures on the client.
+4. *Note:* You can bind to the `pusher:subscription_error` event if you wanted to detect subscription failures on the client.
   
-* Implement authentication with the help of the functionality supplied with the Pusher server library that you are using:
+5. Implement authentication with the help of the functionality supplied with the Pusher server library that you are using:
    * Get auth working without any actual authenticating the user against any application user database. In PHP this can be done as follows:
     
           <?php
@@ -398,13 +398,13 @@ You need to turn on client events for your application in the settings page.
 
 ### Steps - Change to use client events
 
-* Enable client events in your app dashboard
+1. Enable client events in your app dashboard
 
-* Change the event that is being bound to `client-new_message`:
+2. Change the event that is being bound to `client-new_message`:
 
       `channel.bind( 'client-new_message', addMessage );`
       
-* Update the `handleClick` function to trigger a client event:
+3. Update the `handleClick` function to trigger a client event:
 
         function handleClick() {  
             var userMessageEl = $('#user_message');
@@ -414,18 +414,18 @@ You need to turn on client events for your application in the settings page.
             }
         }
 
-* Ensure that upon receipt you verify and sanitize the text.
+4. Ensure that upon receipt you verify and sanitize the text.
 
 * Ensure you don't insert the data directly as HTML into the page. Remember, you can't trust the contents of client events.
 
 
 ### Steps - User X is Typing
 
-* Enable client events in your app dashboard
+1. Enable client events in your app dashboard
 
-* Since we want messages to go via the server so we can store them in the DB for later access. We won't change the existing code to use client events. Instead let's use client events for events that add value, but aren't core to my application e.g. "Phil is typing" or other fun events. *You can of course use for more important events.*
+2. Since we want messages to go via the server so we can store them in the DB for later access. We won't change the existing code to use client events. Instead let's use client events for events that add value, but aren't core to my application e.g. "Phil is typing" or other fun events. *You can of course use for more important events.*
 
-* Add `get_username` function to functions.php
+3. Add `get_username` function to functions.php
 
         function get_username() {
           $username = uniqid('Guest_');
@@ -435,64 +435,64 @@ You need to turn on client events for your application in the settings page.
           return $username;
         }
     
-* Include functions.php in index.php
+4. Include functions.php in index.php
 
       include_once 'functions.php';
     
-* Add user data variable so data is accessible through JavaScript:
+4. Add user data variable so data is accessible through JavaScript:
 
-      var USER = {
-	    NAME: "<?php echo( get_username() ); ?>"
-	  };
+       var USER = {
+	     NAME: "<?php echo( get_username() ); ?>"
+	   };
 
-* Send "Phil is typing"
-  * Detect mousedown events in the textarea and if state is not already 'client-typing' trigger a client event
+5. Send "Phil is typing"
+   * Detect mousedown events in the textarea and if state is not already 'client-typing' trigger a client event
   
-        $('#user_message').mousedown( userTyping );
+         $('#user_message').mousedown( userTyping );
         
-        function userTyping() {
+         function userTyping() {
           
-        }  
+         }  
   
-  * setInterval to clear down if triggered
-  * on further mouse down if state is already typing clear and restart timeout    
+   * setInterval to clear down if triggered
+   * on further mouse down if state is already typing clear and restart timeout    
   
-        var typingTimeout = null;
-        function userTyping() {
-
-          var el = $( this );
-
-          if( !typingTimeout ) {
-            var textEntered = ( $.trim( el.val() ).length > 0 );
-            sendTypingEvent( true, textEntered );
-          }
-          else {
-            window.clearTimeout( typingTimeout );
-            typingTimeout = null;
-          }
-
-          typingTimeout = window.setTimeout( function() {
-            var textEntered = ( $.trim( el.val() ).length > 0 );
-            sendTypingEvent( false, textEntered );
-            typingTimeout = null;
-          }, 3000);
-        }
-
-        function sendTypingEvent( typing, enteredText ) {
-          channel.trigger( 'client-typing', {
-                                              username: USER.NAME,
-                                              typing: typing,
-                                              enteredText: enteredText
-                                            } );
-        }
+            var typingTimeout = null;
+            function userTyping() {
+    
+              var el = $( this );
+    
+              if( !typingTimeout ) {
+                var textEntered = ( $.trim( el.val() ).length > 0 );
+                sendTypingEvent( true, textEntered );
+              }
+              else {
+                window.clearTimeout( typingTimeout );
+                typingTimeout = null;
+              }
+    
+              typingTimeout = window.setTimeout( function() {
+                var textEntered = ( $.trim( el.val() ).length > 0 );
+                sendTypingEvent( false, textEntered );
+                typingTimeout = null;
+              }, 3000);
+            }
+    
+            function sendTypingEvent( typing, enteredText ) {
+              channel.trigger( 'client-typing', {
+                                                  username: USER.NAME,
+                                                  typing: typing,
+                                                  enteredText: enteredText
+                                                } );
+            }
   
-* Check JavaScript console and Pusher Debug Console
+6. Check JavaScript console and Pusher Debug Console. Are events being triggered?
 
-* Add UI element
+7. Add UI element to display typing activity:
 
-      <div id="activity"></div>
+       <div id="activity"></div>
 
-* Update code to receive client events
+8. Update code to receive client events
   * bind to `client-typing` events
   * Check the content of the events - they are client events!
   * Update UI to show who is typing - could be multiples
@@ -510,7 +510,7 @@ You need to turn on client events for your application in the settings page.
             }
           }
       
-* Update AJAX callback to send clear user activity edge-case:
+9. Update AJAX callback to send clear user activity edge-case:
 
       success: function() {
         userMessageEl.val('');

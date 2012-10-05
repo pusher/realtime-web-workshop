@@ -23,6 +23,7 @@ $(function() {
   });
   
   $("pre.js").snippet("javascript", {style:"whitengrey", showNum: false});
+  $("pre.html").snippet("html", {style:"whitengrey", showNum: false});  
   $("pre.csharp").snippet("csharp", {style:"whitengrey", showNum: false});  
   $("pre.php").snippet("php", {style:"whitengrey", showNum: false}); 
   $("pre.ruby").snippet("ruby", {style:"whitengrey", showNum: false});   
