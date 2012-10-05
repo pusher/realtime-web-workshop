@@ -29,7 +29,7 @@ It's expected that you have basic JavaScript and a backend technology knowlege (
 
 The purpose of this exercise is to let you have a play with an interface that is as close to the native `WebSocket` interface as possible.
 
-1. Go to: http://jsbin.com/iyavup/1/edit
+1. Go to: <http://jsbin.com/exijan/1/edit>
 2. Within the `init` function you can see a `SimpleWebSocket` object has been created.
 3. Within the `ws.onopen` handler function use the `log` function to display when the connection has been established.
 4. Within the `ws.onmessage` function use the `log` function to output the contents of the event data
