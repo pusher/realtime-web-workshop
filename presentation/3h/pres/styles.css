@@ -1,5 +1,10 @@
 #title h1 {
-  top: 200px;
+	position: relative;
+	margin-top: 2em;
+}
+
+#title ul {
+	font-size: larger;
 }
 
 #title .interact-link {

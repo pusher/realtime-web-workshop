@@ -24,7 +24,7 @@
       <a href="interact">2nd Screen App</a>
     </li>
     <li>
-      <a href="pres/?__controller">Slides (As Controller of 2nd Screen app)</a>
+      <a href="pres/?<?php echo(CONTROLLER_TOKEN); ?>">Slides (As Controller of 2nd Screen app)</a>
     </li>
   </ul>
   

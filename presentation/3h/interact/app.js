@@ -118,14 +118,23 @@ function getPusher() {
   return Pusher.instances[0];
 }
 
+function getChannel( channelName ) {
+  var pusher = getPusher();
+  var channel = pusher.channel( channelName );
+  if( !channel ) {
+    channel = pusher.subscribe( channelName );
+  }
+  return channel;
+}
+
 function setupPusher() {
   var pusher = getPusher();
-  var introsChannels = pusher.subscribe(PRESENTATION_CHANNEL_NAME);
+  var introsChannels = getChannel(PRESENTATION_CHANNEL_NAME);
   introsChannels.bind('introduction', function(data) {
     displayMessage('Hello from ' + data.name + ' who\'s favourite technology is ' + data.tech);
   });
   
-  var deckjsChannel = pusher.subscribe(DECKJS_CHANNEL_NAME);
+  var deckjsChannel = getChannel(DECKJS_CHANNEL_NAME);
   deckjsChannel.bind('slide_change', function(data) {
     $('header .slide').text((parseInt(data.to, 10) + 1) + '/' + data.count);
     
@@ -133,7 +142,7 @@ function setupPusher() {
   });
 
   // fun stuff  
-  var clientChannel = pusher.subscribe(TRIGGER_CHANNEL_NAME);
+  var clientChannel = getChannel(TRIGGER_CHANNEL_NAME);
   clientChannel.bind('client-fun-stuff', doFunStuff);
 
   var alien = $('<img class="alien" src="../../assets/images/scarey_alien.png" alt="Alien" />');
@@ -169,9 +178,7 @@ function subscribeToPresence() {
 function goOnline() {
   $('#goOnline').parent('.ui-btn').slideUp();
   
-  var pusher = getPusher();
-  
-  var channel = pusher.subscribe(PRESENCE_CHANNEL_NAME);
+  var channel = getChannel(PRESENCE_CHANNEL_NAME);
   channel.bind('pusher:subscription_succeeded', function(members) {
     members.each(addMember);
   });
@@ -219,8 +226,7 @@ function initChat() {
 }
 
 function initClientEvents() {
-  var pusher = getPusher();
-  pusher.channel(TRIGGER_CHANNEL_NAME).bind('client-new_trigger', handleClientTrigger);
+  getChannel(TRIGGER_CHANNEL_NAME).bind('client-new_trigger', handleClientTrigger);
 }
 
 function handleClientTrigger(data) {

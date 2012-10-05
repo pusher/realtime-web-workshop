@@ -120,18 +120,11 @@
 ## <?php echo(PRESENTATION_DATE); ?>
 
 # <?php echo(PRESENTATION_TITLE); ?>
-	
-<span class="interact-link">Please go to <a href="<?php echo(INTERACT_URL); ?>"><?php echo(INTERACT_URL); ?></a><br />
-  <img src="http://chart.apis.google.com/chart?cht=qr&chs=300x300&chl=<?php echo( htmlspecialchars(INTERACT_URL) ); ?>&chld=H|0" />
-</span>
-</section>
 
-<section class="slide markdown just-bullets pusher" id="who">
-## Who is this guy?
 
 * [Phil Leggetter](http://www.leggetter.co.uk)
 * [www.leggetter.co.uk](http://www.leggetter.co.uk)
-* [@leggetter](http://twitter.com/leggetter)	  
+* [@leggetter](http://twitter.com/leggetter)    
 * Developer Evangelist at [Pusher](http://pusher.com)
 </section>
 
@@ -155,6 +148,7 @@
 * Web Server?
 * Browser with dev tools?
 * **Pair up?**
+* Get the workshop files: [https://github.com/pusher/realtime-web-workshop](https://github.com/pusher/realtime-web-workshop)
 
 </section>
 
@@ -205,6 +199,7 @@ channel.bind('introduction', function(data) {
 * Convenience
 * Interaction
 * Engagement
+* **Improved richer user experiences**
 
 <aside class="notes">
 * Interactive &amp; Engaging experiences
@@ -264,28 +259,63 @@ ws.onclose = function(ev) {};
 <section class="slide markdown" id="websocket_support">
 ## WebSocket Support
 
-<iframe src="http://caniuse.com/#feat=websockets" width="100%" height="400"></iframe>
+<!-- <iframe src="http://caniuse.com/#feat=websockets" width="100%" height="400"></iframe> -->
+<a href="http://caniuse.com/#feat=websockets">http://caniuse.com/#feat=websockets</a>
 
 * Can use on IE6, IE7, IE8, IE9 and other older mainstream browsers with <a href="https://github.com/gimite/web-socket-js">web-socket-js Polyfil</a>
 * Can use on Android with [FlashLite](http://en.wikipedia.org/wiki/Adobe_Flash_Lite) or using [Firefox for Android](https://market.android.com/details?id=org.mozilla.firefox&hl=en) and [Chrome for Android](https://market.android.com/details?id=com.android.chrome).
+</section>
+
+<section class="slide markdown" id="exercise_simplewebsocket">
+# Exercise 0.5: Native WebSocket API  
+</section>
+
+<section class="slide markdown just-bullets" id="simplewebsocket_summary">
+## Summary: Native WebSocket API
+
+* In order to get data we need to connect to the source
+* What about reconnections
+* How do you identify the data you want to receive?
+* What about routing of data?
+* What about authenticating connections?
+* **We need more that what the native raw tech offers - use a library**
+</section>
+
+<section class="slide markdown" id="pusher-library">
+## Pusher JavaScript library
+
+<pre class="js">
+var pusher = new Pusher( 'app_key' );
+
+pusher.connection.bind( 'connected', function() {
+  // we are connected
+});
+
+pusher.connection.bind( 'state_change', function( state ) {
+  var previousState = state.previous;
+  var currentState = state.current;
+});
+</code>
+</pre>
+
 </section>
 
 <section class="slide markdown" id="exercise_connecting">
 # Exercise 1: Connecting  
 </section>
 
-<section class="slide markdown just-bullets" id="subscribe_summar">
+<section class="slide markdown just-bullets" id="connecting_summary">
 ## Summary: Connecting
 
-* In order to get data we need to connect to the source
-* What about reconnections
-* How do you identify the data you want?
-* What about routing of data?
-* What about authenticating connections?
+* Create a new `Pusher` instance and supply your `app_key`
+* Bind to connection events on the `pusher.connection` object
 </section>
 
-<section class="slide markdown smaller" id="we_need_more">
-# But, We need more than what the raw technology offers...
+<section class="slide markdown" id="what_about_the_data">
+## What about the data?
+
+* How do you identify the data you want to receive?
+* What about routing of data?
 </section>
 
 <section class="slide just-bullets interact" id="pub_sub">
@@ -472,10 +502,10 @@ function unsubscribe() {
 <section class="slide markdown just-bullets" id="subscribe_summar">
 ## Summary: Subscribing
 
-* Connect then subscribe
 * Use channels to filter and route data
+  * product-1-channel, android-news-27-channel, project-fishcake-channel, bulls-v-lakers-channel
 * Use events to help further filter e.g.
-  * map to Create, Update, Delete
+  * map to Created, Updated, Deleted, Liked, CommentReceived etc.
   * use with models in frameworks such as Backbone.js
   * map to UI changes
 * Deciding how to structure your channels is a form of Information Architecture
@@ -570,6 +600,9 @@ function unsubscribe() {
 <a href="http://youtu.be/rRwhbqNn7TY" class="demo-video"></a>
 
 <iframe src="https://ghosts.herokuapp.com" style="height: 100%; width: 100%;"></iframe>
+
+<small><a href="https://ghosts.herokuapp.com">https://ghosts.herokuapp.com</a></small>
+
 </section>
 
 <section class="slide markdown just-bullets nobg" id="publish_where">
@@ -679,6 +712,17 @@ pusher.trigger('my-channel',
 # Exercise 3: Publishing / Triggering  
 </section>
 
+<section class="slide markdown just-bullets" id="publish_server_summary">
+## Summary: Publishing / Server
+
+* Secure - authenticate, sanitize, validate
+* You server is the authority
+* You can persist messages
+* Consider:
+  * How much data you are sending
+  * What devices are receiving the data
+</section>
+
 <section class="slide markdown" id="private_channels_intro">
 # User Authentication / Private Channels
 </section>
@@ -698,8 +742,8 @@ pusher.trigger('my-channel',
 # Exercise 4: User Authentication / Private Channels
 </section>
 
-<section class="slide markdown" id="auth_exercise">
-# Summary: User/Subscription Autentiction
+<section class="slide markdown just-bullets" id="auth_exercise">
+## Summary: User/Subscription Authentication
 
 * Ensure there is a mechanism for authenticating subscriptions
 * There needs to be an authority
@@ -784,7 +828,15 @@ function publish() {
 <section class="slide markdown just-bullets" id="presence_intro">
 ## Presence
 
-* TODO
+* Who else is subscribed to a channel?
+* List of existing subscribers
+* Join/Leave events
+  * `member_added`
+  * `member_removed`
+* Very handy for:
+  * Chat rooms
+  * Collaborative apps
+  * Games
 </section>
 
 <section class="slide interact" id="presence">
@@ -829,10 +881,18 @@ function removeMember(member) {
 # WebHooks
 </section>
 
-<section class="slide markdown just-bullets" id="webhooks_intro">
+<section class="slide markdown" id="webhooks_intro">
 ## WebHooks
 
-* TODO
+* What's happening in Pusher with your app?
+* HTTP callbacks from Pusher to your web application
+* Channel existence
+  * `channel_occupied`
+  * `channel_vacated`
+* Presence events
+  * `member_added`
+  * `member_removed`
+* More?
 </section>
 
 <section class="slide markdown" id="queries_title">
@@ -842,7 +902,10 @@ function removeMember(member) {
 <section class="slide markdown just-bullets" id="queries_intro">
 ## Channel Queries
 
-* TODO
+* Initial state when your app starts up
+* Is a channel occupied?
+* How many users are subscribed to a channel?
+* What users are subscribed to a presence channel?
 </section>
 
 <section class="slide markdown just-bullets smaller" id="future">
@@ -872,53 +935,34 @@ function removeMember(member) {
 <section class="slide markdown just-bullets" id="future_ardunio">
 ## Arduino's taking over the World!
 
-<iframe width="800" height="600" src="http://www.youtube.com/embed/YQIMGV5vtd4" frameborder="0" allowfullscreen></iframe>
+<!-- <iframe width="800" height="600" src="http://www.youtube.com/embed/YQIMGV5vtd4" frameborder="0" allowfullscreen></iframe> -->
+<a href="http://www.youtube.com/embed/YQIMGV5vtd4">http://www.youtube.com/embed/YQIMGV5vtd4</a>
 </section>
 
 <section class="slide markdown just-bullets" id="summary">
 ## Summary
 
-* The Realtime Web
-  * Isn't just a marketing term
-  * Is powered by awesome technology
-* Realtime Web technology
+* The Realtime Web isn't just a marketing term
+* Realtime Web awesome technology
   * Is in use today (in the wild)
   * Is fun to develop with
-  * Adds **real** value to apps through **Interaction** and **Engagement**
+* Connect, Subscribe, Publish, Authenticate  
+* Adds **real** value to apps:
+    * through **Interaction** and **Engagement**
+    * **Improves User Experience (UX)**
+    * by **connecting audiences**
 </section>
 
 <section class="slide just-bullets markdown pusher" id="questions">
 <h2>Questions?/Thanks</h2>
 
-* I run a realtime web workshop. If you are interested please give me a shout.
-
-* We're hiring: [http://pusher.com/jobs](http://pusher.com/jobs)
+* We can run a longer version of this workshop. If you are interested please give me a shout.
 
 * Slides available: [<?php echo(SLIDES_URL); ?>](<?php echo(SLIDES_URL); ?>)
   
 * [Phil Leggetter](http://www.leggetter.co.uk), [@leggetter](http://twitter.com/leggetter)
 * [Pusher](http://pusher.com) ([@pusher](http://twitter.com/pusher))
 	  
-</section>
-
-
-<section class="slide markdown just-bullets" id="pusher">
-## Pusher
-
-<img src="../../assets/images/pusher_cloud_diagram.png" width="438" height="286" alt="Pusher Cloud Diagram" align="right" />
-
-* Hosted service
-* Massively Scalable
-* Quick, Easy &amp; Secure
-* Spend time building stuff...
-* Not configuring infrastructure
-
-<aside class="notes">
-* Pusher is a hosted service that allows developers to quickly and easily build awesome realtime apps.
-* We believe developers should spend their time building awesome shit, rather than configuring and managing infrastructure. 
-* Realtime infrastructure is not what makes your application special for your users.
-</aside>
-
 </section>
 
 <a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
