@@ -1,5 +1,7 @@
 *config.php
 *.DS_Store
+*node_modules
+.c9revisions
 presentation/assets/audio
 presentation/assets/videos
 presentation/deck-js/assets/audio

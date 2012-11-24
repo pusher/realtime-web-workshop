@@ -39,14 +39,14 @@
     }
   };
   
-  var pusher = new Pusher('');
+  var pusher = new Pusher('<%= appKey %>');
   pusher.connection.bind('state_change', function( change ) {
     var el = $('.connection-status');
     el.removeClass( change.previous );
     el.addClass( change.current );
   });
   
-  var channel = pusher.subscribe( 'messages' );
+  var channel = pusher.subscribe( '<%= channelName =>' );
   channel.bind( 'new_message', addMessage );
   
   function addMessage( data ) {

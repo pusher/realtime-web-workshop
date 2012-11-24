@@ -19,7 +19,7 @@ If you don't mind signing up for a free Pusher Sandbox plan do so. It'll mean yo
 ### Create a new Pusher instance
        
     // If you have your own account change the key below.
-    var pusher = new Pusher( '43549c6d4c7248a2f848' );
+    var pusher = new Pusher( 'dc51aaac1ba21c033848' );
 
 ### How do we know we're connected?
 
