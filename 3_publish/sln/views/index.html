@@ -25,7 +25,7 @@
     <label for="textarea" class="ui-hidden-accessible">Message:</label>
   	<textarea name="user_message" id="user_message" placeholder="Message"></textarea>
   	
-  	<a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>
+  	<a id="send_btn" href="/new_message" data-role="button" data-theme="b">Send</a>
 
 	</div><!-- /content -->
 
@@ -66,7 +66,7 @@
     var message = $.trim( userMessageEl.val() );
     if( message ) {
       $.ajax( {
-        url: 'new_message',
+        url: '/new_message',
         type: 'post',
         data: {
           text: message

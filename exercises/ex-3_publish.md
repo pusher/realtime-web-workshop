@@ -114,7 +114,7 @@ Finally, we need to update `server.js`:
       res.render( 'index' );
     } );
     
-    app.listen( process.env.PORT );
+    app.listen( process.env.PORT || 5000 );
     
 This code requires the ejs package and tells expressjs to render .html files using ejs templating engine and that the templates are inthe `views` directory. It also defines that the root of the application should serve the `index` view, our `views/index.html` file.
 
@@ -155,42 +155,47 @@ Now we just need to update our `views/index.html` template to use the view data 
 
     var pusher = new Pusher( '<%= appKey %>' );
     
-    var channel = pusher.subscribe( '<%= channelName =>' );
+    var channel = pusher.subscribe( '<%= channelName %>' );
     
 Now, run your app and make sure the client still connects to Pusher and the subscription is successful.
 
 **Phew!** We've restructured our application to use expressjs so we can now **create our endpoint which is used to trigger events**.
 
-### New Message endpoint
-
-Create a new endpoint to trigger your messages. If using PHP create a `new_message.php` file
-
-### Pusher server library
-
-Get the server library of your choice via: <http://pusher.com/docs/server_libraries> and reference it from your new endpoint. For PHP include the `Pusher.php` library in `new_message.php`
-
-### Pusher app configuration
-
-Create a config file and set your config variables from the Pusher dashboard. For PHP create a `config.php` file:
-   
-    <?php
-      define('APP_ID', '');
-      define('APP_KEY', '');
-      define('APP_SECRET', '');
-    ?>
-   
-Initialise the library as required. For PHP this is using:
-   
-    $pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
-
 ### Triggering the event
-         
-Trigger/Publish a `new_message` event on the `messages` channel. The event data should have a `text` property. In PHP this looks as follows:
+
+We want to trigger/publish a `new_message` event on the `messages` channel and the event data should have a `text` property.
+
+First we need to get the Pusher library that helps us do this. So, add [`node-pusher`](https://npmjs.org/package/node-pusher) as a dependency to `package.json`.
+
+    {
+      "name": "rtw-workshop-sample-app",
+      "description": "Realtime Web Workshop sample app",
+      "version": "0.0.1",
+      "private": true,
+      "dependencies": {
+        "express": "3.x",
+        "ejs": "0.8.3",
+        "node-pusher": "0.0.2"
+      }
+    }
+    
+And run `npm update` to pull down the package.
+
+Now we have the package let's create a `new_message` endpoint which triggers the message. In there we'll create a new `Pusher` object and trigger/publish the event.
+
+    var Pusher = require( 'node-pusher' );
+
+    app.get( '/new_message', function( req, res ) {
+        var pusher = new Pusher( {
+          appId: config.pusher.appId,
+          key: config.pusher.appKey,
+          secret: config.pusher.appSecret
+        } );
+        pusher.trigger( config.pusher.channelName, 'new_message', { text: 'hello' } );
+        res.send( 200 );
+    } );
    
-  	$pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
-		$pusher->trigger( 'messages', 'new_message', array('text' => 'hello world' ) );
-   
-Navigate to `new_message.php` and see the data appear in:
+Navigate to `/new_message` in your browser and see the data appear in:
 
 1. The Pusher debug console
 2. The `window.console`
@@ -205,9 +210,9 @@ Create new markup:
     <label for="textarea" class="ui-hidden-accessible">Message:</label>
     <textarea name="user_message" id="user_message" placeholder="Message"></textarea>
     
-    <a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>     
+    <a id="send_btn" href="/new_message" data-role="button" data-theme="b">Send</a>     
 
-Update the messages CSS:
+Update the messages CSS in `public/styles.css`:
     
     #messages {
       min-height: 100px;
@@ -229,32 +234,47 @@ Create the JavaScript to handle the button click end send the data via AJAX:
         var userMessageEl = $('#user_message');
         var message = $.trim( userMessageEl.val() );
         if( message ) {
-        $.ajax( {
-            url: 'new_message.php',
-            type: 'post',
-            data: {
-            text: message
-            },
-            success: function() {
-            userMessageEl.val('');
-            }
-        });
+            $.ajax( {
+                url: '/new_message',
+                type: 'post',
+                data: {
+                    text: message
+                },
+                success: function() {
+                    userMessageEl.val('');
+                }
+            });
         }
         
         return false;
     }
     
-Update `new_message.php` to get the `POST` `text` parameter that was posted. Put scaffolding in place to verify the data:
+We next need to update the `/new_message` to receive the `POST` AJAX call with `text` parameter. To do this we need to tell expressjs to parse the request using the `bodyParser`:
+
+    app.use( express.bodyParser() );
+
+We should also put some scaffolding in place to verify and sanitise the data:
   
-    $text = $_POST['text'];
-
-    if( verify_message( $text ) ) {
-      $pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
-      $pusher->trigger( 'messages', 'new_message', array('text' => $text) );
-    }
-
-    function verify_message() {
-      return true;
+    app.post( '/new_message', function( req, res ) {
+        
+        var text = req.body.text;
+        if( verifyMessage( text ) === false ) {
+            req.send( 401 );
+            return;
+        }
+        
+        var pusher = new Pusher( {
+          appId: config.pusher.appId,
+          key: config.pusher.appKey,
+          secret: config.pusher.appSecret
+        } );
+        pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
+        res.send( 200 );
+        
+    } );
+    
+    function verifyMessage( text ) {
+        return true;
     }
 
 ### That's it!
