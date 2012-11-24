@@ -65,7 +65,13 @@ This does the following:
 
 #### Static files
 
-It's standard in a number of of web servers that any static content (HTML documents, CSS, Images, JavaScript) should be served from a folder called `public` (or `static`) so let's create a `public` folder, move `index.html` and `styles.css` in there (`git mv index.html styles.css public/`) and tell the server that's where the static files are served from. If we do this we can even remove the default root. The `server.js` code becomes:
+It's standard in a number of of web servers that any static content (HTML documents, CSS, Images, JavaScript) should be served from a folder called `public` (or `static`) so let's create a `public` folder and:
+
+* `git mv index.html public/`
+* `mkdir public/css`
+* `git mv styles.css public/css/`
+
+And tell the server that's where the static files are served from. If we do this we can even remove the default root. The `server.js` code becomes:
 
     var express = require('express');
     
