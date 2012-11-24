@@ -46,7 +46,7 @@
     el.addClass( change.current );
   });
   
-  var channel = pusher.subscribe( '<%= channelName =>' );
+  var channel = pusher.subscribe( '<%= channelName %>' );
   channel.bind( 'new_message', addMessage );
   
   function addMessage( data ) {

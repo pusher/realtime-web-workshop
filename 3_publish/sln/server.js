@@ -21,4 +21,6 @@ app.get( '/', function ( req, res ) {
   res.render( 'index', viewData );
 } );
 
-app.listen( process.env.PORT );
+var port = process.env.PORT || 5000;
+app.listen( port );
+console.log( 'listening on port ' + port );
