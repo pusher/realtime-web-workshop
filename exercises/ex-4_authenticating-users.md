@@ -4,50 +4,34 @@ When you want to restrict access to who can subscribe to a channel you use [priv
 
 ## Workshop Code refactoring
 
-Some refactoring has taken place to clean up the structure of the app a bit.
+We've been trying to follow best practices throughout the workshop. But our JavaScript is still in our view and would be better in an external JavaScript file. So, before we get started with this exercise let's move as much JavaScript out of `views/index.html` and put it into `public/js/app.js`.
 
-**You don't need to do this. This is just for your information**
+Remember that the `appKey` and `channelName` are passed to the view so we'll need to expose that to the the code in `js/app.js`. We'll have to do that using a global variable. So, expose the config and include the new `js/app.js` file in `views/index.html`:
 
-### Details
-
-`index.html` renamed to `index.php`
-
-`config.php` included in `index.php`
-
-    <?php
-      include 'config.php';
-    ?>
-    
-`config.php` updated to define the channel name as it's used on the server when publishing messages and on the client when subscribing:
-
-    define('CHANNEL_NAME', 'messages');
-      
-Update new_message.php to use `CHANNEL_NAME':
-
-    $pusher->trigger( CHANNEL_NAME, 'new_message', array('text' => $text) );      
-    
-`APP_KEY` and `CHANNEL_NAME` made accessible as global JavaScript variable via `CONFIG.PUSHER` object:
-
+    <script src="http://js.pusher.com/1.12/pusher.min.js"></script>
     <script>
-  	  var CONFIG = {
-  	    PUSHER: {
-  	      APP_KEY: "<?php echo( APP_KEY ); ?>",
-  	      CHANNEL_NAME: "<?php echo( CHANNEL_NAME ); ?>"
-  	    }
-  	  };
-  	</script>
-  	
-Update constructor to use `CONFIG`
+      var CONFIG = {
+        pusher: {
+          appKey: '<%= appKey %>',
+          channelName: '<%= channelName %>'
+        }
+      };
+    </script>
+    <script src="js/app.js"></script>
 
-    var pusher = new Pusher( CONFIG.PUSHER.APP_KEY );
-      
-Update the `pusher.subscribe` call to use the new `CHANNEL_NAME` variable:
+In `js/app.js` we'll wrap the existing code in a closure and pass in the dependencies.
 
-    var channel = pusher.subscribe( CONFIG.PUSHER.CHANNEL_NAME );
-        
-Moved JavaScript into `js/app.js`
+    ( function( window, Pusher, $, config) {
+      // existing code
+    })( window, window['Pusher'], jQuery, CONFIG ); 
 
-`style.css` moved into `css/style.css` 
+This includes the `window` object, the `Pusher` reference, `jQuery` and the `CONFIG` we've just created.  We'll use the `config` when creating our `Pusher` instance and subscribing the channel:
+
+    var pusher = new Pusher( config.pusher.appKey );
+
+    var channel = pusher.subscribe( config.pusher.channelName );
+
+Now that we've finished with this refactoring we can update the application to use a private channel and authenticate the user.    
 
 ## Docs
 
