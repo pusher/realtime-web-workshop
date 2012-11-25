@@ -14,6 +14,12 @@ app.engine( '.html', ejs.__express );
 app.set( 'view engine', 'html' );
 app.set( 'views', __dirname + '/views' );
 
+var pusher = new Pusher( {
+  appId: config.pusher.appId,
+  key: config.pusher.appKey,
+  secret: config.pusher.appSecret
+} );
+
 var viewData = {
     appKey: config.pusher.appKey,
     channelName: config.pusher.channelName
@@ -27,18 +33,17 @@ app.post( '/new_message', function( req, res ) {
     
     var text = req.body.text;
     if( verifyMessage( text ) === false ) {
-        req.send( 401 );
+        req.send( 400 );
         return;
     }
     
-    var pusher = new Pusher( {
-      appId: config.pusher.appId,
-      key: config.pusher.appKey,
-      secret: config.pusher.appSecret
-    } );
     pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
     res.send( 200 );
     
+} );
+
+app.post( '/pusher/auth', function( req, res ) {
+  res.send( 200 );
 } );
 
 function verifyMessage( text ) {

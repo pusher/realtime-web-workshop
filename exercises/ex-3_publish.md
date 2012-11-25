@@ -260,20 +260,21 @@ We next need to update the `/new_message` to receive the `POST` AJAX call with `
     app.use( express.bodyParser() );
 
 We should also put some scaffolding in place to verify and sanitise the data:
+
+    var pusher = new Pusher( {
+          appId: config.pusher.appId,
+          key: config.pusher.appKey,
+          secret: config.pusher.appSecret
+        } );
   
     app.post( '/new_message', function( req, res ) {
         
         var text = req.body.text;
         if( verifyMessage( text ) === false ) {
-            req.send( 401 );
+            req.send( 400 );
             return;
         }
         
-        var pusher = new Pusher( {
-          appId: config.pusher.appId,
-          key: config.pusher.appKey,
-          secret: config.pusher.appSecret
-        } );
         pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
         res.send( 200 );
         
