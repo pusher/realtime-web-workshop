@@ -14,6 +14,12 @@ app.engine( '.html', ejs.__express );
 app.set( 'view engine', 'html' );
 app.set( 'views', __dirname + '/views' );
 
+var pusher = new Pusher( {
+  appId: config.pusher.appId,
+  key: config.pusher.appKey,
+  secret: config.pusher.appSecret
+} );
+
 var viewData = {
     appKey: config.pusher.appKey,
     channelName: config.pusher.channelName
@@ -27,15 +33,10 @@ app.post( '/new_message', function( req, res ) {
     
     var text = req.body.text;
     if( verifyMessage( text ) === false ) {
-        req.send( 401 );
+        req.send( 400 );
         return;
     }
     
-    var pusher = new Pusher( {
-      appId: config.pusher.appId,
-      key: config.pusher.appKey,
-      secret: config.pusher.appSecret
-    } );
     pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
     res.send( 200 );
     
@@ -43,6 +44,28 @@ app.post( '/new_message', function( req, res ) {
 
 function verifyMessage( text ) {
     return true;
+}
+
+app.post( '/pusher/auth', function( req, res ) {
+
+  if( userLoggedIn( req ) === false ) {
+    res.send( 401 );
+    return;
+  }
+
+  var socketId = req.body.socket_id;
+  var channelName = req.body.channel_name;
+
+  var auth = pusher.auth( socketId, channelName );
+
+  res.send( auth );
+} );
+
+function userLoggedIn( req ) {
+  if( req.headers['referer'].indexOf( 'auth=1' ) !== -1 ) {
+    return true;
+  }
+  return false;
 }
 
 var port = process.env.PORT || 5000;

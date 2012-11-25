@@ -1,4 +1,4 @@
-( function( window, Pusher, $, config) {
+( function( window, Pusher, $, config ) {
   
   Pusher.log = function( msg ) {
     if( window.console && window.console.log ) {

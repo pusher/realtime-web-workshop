@@ -21,7 +21,7 @@ Remember that the `appKey` and `channelName` are passed to the view so we'll nee
 
 In `js/app.js` we'll wrap the existing code in a closure and pass in the dependencies.
 
-    ( function( window, Pusher, $, config) {
+    ( function( window, Pusher, $, config ) {
       // existing code
     })( window, window['Pusher'], jQuery, CONFIG ); 
 
@@ -42,9 +42,13 @@ Now that we've finished with this refactoring we can update the application to u
 
 ### Use a Private Channel
   
-Change channel subscription to 'private-' prefix. If using PHP then this can can be made in `config.php`:
+Change channel subscription to 'private-' prefix. Since we have this defined in our config we can change it there:
 
-    define('CHANNEL_NAME', 'private-messages');
+    {
+        "pusher": {
+            "channelName": "private-messages"
+        }
+    }
 
 Run the application and have a look at the network tab in your browser development tools. 
 
@@ -53,28 +57,26 @@ Run the application and have a look at the network tab in your browser developme
 
 ### Create an Authentication endpoint
   
-Add auth endpoint. By default this will be `/pusher/auth` but you can set your own using `Pusher.channel_auth_endpoint`. If you are using PHP you can do the following and create an `auth.php` file located relative to your main application file:
-  
-    Pusher.channel_auth_endpoint = 'auth.php';
+Add auth endpoint. By default this will be `/pusher/auth` but you can set your own using `Pusher.channel_auth_endpoint`.
+
+    app.post( '/pusher/auth', function( req, res ) {
+
+    } );
   
 *Note:* You can bind to the `pusher:subscription_error` event if you wanted to detect subscription failures on the client.
-  
-Implement authentication with the help of the functionality supplied with the Pusher server library that you are using:
 
-Get auth working without any actual authenticating the user against any application user database. In PHP this can be done as follows:
-    
-    <?php
-      include 'Pusher.php';
-      include 'config.php';
-    
-      $pusher = new Pusher(APP_KEY, APP_SECRET, APP_ID);
-    
-      $socket_id = $_POST['socket_id'];
-      $channel_name = $_POST['channel_name'];
-    
-      $auth = $pusher->socket_auth( CHANNEL_NAME, $socket_id );
-      echo( $auth );
-    ?>
+### Authenticate the request
+
+Implement authentication with the help of the functionality supplied with the Pusher server library for the moment we won't actually authenticate the user in any way:
+
+  app.post( '/pusher/auth', function( req, res ) {
+    var socketId = req.body.socket_id;
+    var channelName = req.body.channel_name;
+
+    var auth = pusher.auth( socketId, channelName );
+
+    res.send( auth );
+  } );
 
 ### Verify Authentication is working
         
@@ -86,24 +88,30 @@ You can check that the authentiction is working as expected in the following pla
 
 ### Optional (if time)
     
-Change the code to allow/disallow the user:
+Change the code to allow/disallow the user.
 
-Create a new functions.php
+Create a new function to do user authentication:
     
-    <?php
-      function user_logged_in() {
-        // most insecure auth check EVER!
-        return strstr( $_SERVER['HTTP_REFERER'], 'auth=1' );
+    function userLoggedIn( req ) {
+      if( req.headers['referer'].indexOf( 'auth=1' ) !== -1 ) {
+        return true;
       }
-    ?>
-         
-Include this new file in the `auth.php` file.
-    
-Update `auth.php` to include `functions.php` and call:
-    
-    if( !user_logged_in() ) {
-      header('HTTP/1.1 403 Forbidden');
-      exit( 'Not authorized' );
+      return false;
     }
     
-Update `new_message.php` (publish endpoint) to also do the auth check.
+Authenticate the call to `/pusher/auth`:
+
+  app.post( '/pusher/auth', function( req, res ) {
+
+    if( userLoggedIn( req ) === false ) {
+      res.send( 401 );
+      return;
+    }
+
+    var socketId = req.body.socket_id;
+    var channelName = req.body.channel_name;
+
+    var auth = pusher.auth( socketId, channelName );
+
+    res.send( auth );
+  } );
