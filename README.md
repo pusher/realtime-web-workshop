@@ -8,7 +8,7 @@ The exercises contained within the Realtime Web Workship will cover gradually bu
 
 Details for each exercies can be found within the `exercises` directory. They cover:
 
-* Development Environemnt requirements
+* Development Environment requirements
 * WebSockets
 * Connecting
 * Subscribing
