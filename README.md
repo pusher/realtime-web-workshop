@@ -8,10 +8,17 @@ The exercises contained within the Realtime Web Workship will cover gradually bu
 
 Details for each exercies can be found within the `exercises` directory. They cover:
 
-* Development Environemnt requirements
+* Development Environment requirements
 * WebSockets
 * Connecting
 * Subscribing
 * Publishing
 * Authenticating Users
 * Client Events
+
+## The Code
+
+You can get the code for the exercises in two back-end languages right now:
+
+* [PHP](tree/php)
+* [node.js](tree/node)
