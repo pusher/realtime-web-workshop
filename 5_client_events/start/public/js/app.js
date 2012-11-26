@@ -1,21 +1,19 @@
-( function( window, Pusher, $) {
+( function( window, Pusher, $, config ) {
   
   Pusher.log = function( msg ) {
     if( window.console && window.console.log ) {
       window.console.log( msg );
     }
   };
-  
-  Pusher.channel_auth_endpoint = 'auth.php';
 
-  var pusher = new Pusher( CONFIG.PUSHER.APP_KEY );
+  var pusher = new Pusher( config.pusher.appKey );
   pusher.connection.bind('state_change', function( change ) {
     var el = $('.connection-status');
     el.removeClass( change.previous );
     el.addClass( change.current );
   });
 
-  var channel = pusher.subscribe( CONFIG.PUSHER.CHANNEL_NAME );
+  var channel = pusher.subscribe( config.pusher.channelName );
   channel.bind( 'new_message', addMessage );
 
   function addMessage( data ) {
@@ -49,4 +47,4 @@
     return false;
   }
   
-})( window, window['Pusher'], jQuery );
+})( window, window['Pusher'], jQuery, CONFIG );

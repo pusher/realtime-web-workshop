@@ -1,0 +1,8 @@
+{
+    "pusher": {
+        "appId": "",
+        "appKey": "",
+        "appSecret": "",
+        "channelName": "private-messages"
+    }
+}

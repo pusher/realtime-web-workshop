@@ -1,8 +1,4 @@
-<?php
-include 'config.php';
-?>
-
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html> 
 	<head> 
 	<title>My Page</title> 
@@ -10,14 +6,6 @@ include 'config.php';
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
-	<script>
-  var CONFIG = {
-    PUSHER: {
-      APP_KEY: "<?php echo( APP_KEY ); ?>",
-      CHANNEL_NAME: "<?php echo( CHANNEL_NAME ); ?>"
-    }
-  };
-	</script>
 	
 	<link rel="stylesheet" href="css/styles.css" type="text/css" />
 </head> 
@@ -37,13 +25,21 @@ include 'config.php';
     <label for="textarea" class="ui-hidden-accessible">Message:</label>
   	<textarea name="user_message" id="user_message" placeholder="Message"></textarea>
   	
-  	<a id="send_btn" href="index.html" data-role="button" data-theme="b">Send</a>
+  	<a id="send_btn" href="/new_message" data-role="button" data-theme="b">Send</a>
 
 	</div><!-- /content -->
 
 </div><!-- /page -->
 
 <script src="http://js.pusher.com/1.12/pusher.min.js"></script>
+<script>
+  var CONFIG = {
+    pusher: {
+      appKey: '<%= appKey %>',
+      channelName: '<%= channelName %>'
+    }
+  };
+</script>
 <script src="js/app.js"></script>
 
 </body>

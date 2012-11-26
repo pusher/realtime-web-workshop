@@ -69,14 +69,34 @@ Add auth endpoint. By default this will be `/pusher/auth` but you can set your o
 
 Implement authentication with the help of the functionality supplied with the Pusher server library for the moment we won't actually authenticate the user in any way:
 
-  app.post( '/pusher/auth', function( req, res ) {
-    var socketId = req.body.socket_id;
-    var channelName = req.body.channel_name;
+    app.post( '/pusher/auth', function( req, res ) {
+      var socketId = req.body.socket_id;
+      var channelName = req.body.channel_name;
 
-    var auth = pusher.auth( socketId, channelName );
+      var auth = pusher.auth( socketId, channelName );
 
-    res.send( auth );
-  } );
+      res.send( auth );
+    } );
+
+We also only want authenticated users to be able to post messages so we need to update the `new_message` code:
+
+    app.post( '/new_message', function( req, res ) {
+        
+      if( userLoggedIn( req ) === false ) {
+        res.send( 401 );
+        return;
+      }
+        
+      var text = req.body.text;
+      if( verifyMessage( text ) === false ) {
+          req.send( 400 );
+          return;
+      }
+      
+      pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
+      res.send( 200 );
+        
+    } );  
 
 ### Verify Authentication is working
         

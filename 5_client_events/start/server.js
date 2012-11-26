@@ -30,7 +30,7 @@ app.get( '/', function ( req, res ) {
 } );
 
 app.post( '/new_message', function( req, res ) {
-    
+
   if( userLoggedIn( req ) === false ) {
     res.send( 401 );
     return;
