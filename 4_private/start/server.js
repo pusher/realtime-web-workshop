@@ -20,25 +20,25 @@ var pusher = new Pusher( {
   secret: config.pusher.appSecret
 } );
 
-var viewData = {
+app.get( '/', function ( req, res ) {
+  var viewData = {
     appKey: config.pusher.appKey,
     channelName: config.pusher.channelName
-};
-
-app.get( '/', function ( req, res ) {
+  };
+  
   res.render( 'index', viewData );
 } );
 
 app.post( '/new_message', function( req, res ) {
     
-    var text = req.body.text;
-    if( verifyMessage( text ) === false ) {
-        req.send( 400 );
-        return;
-    }
-    
-    pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
-    res.send( 200 );
+  var text = req.body.text;
+  if( verifyMessage( text ) === false ) {
+      req.send( 400 );
+      return;
+  }
+  
+  pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
+  res.send( 200 );
     
 } );
 

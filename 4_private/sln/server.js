@@ -20,12 +20,12 @@ var pusher = new Pusher( {
   secret: config.pusher.appSecret
 } );
 
-var viewData = {
+app.get( '/', function ( req, res ) {
+  var viewData = {
     appKey: config.pusher.appKey,
     channelName: config.pusher.channelName
-};
-
-app.get( '/', function ( req, res ) {
+  };
+  
   res.render( 'index', viewData );
 } );
 

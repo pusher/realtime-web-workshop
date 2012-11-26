@@ -20,17 +20,23 @@ var pusher = new Pusher( {
   secret: config.pusher.appSecret
 } );
 
+function getUsername( req ) {
+  var username = req.query.user || 'unknown';
+  return username;
+}
+
 app.get( '/', function ( req, res ) {
   var viewData = {
     appKey: config.pusher.appKey,
-    channelName: config.pusher.channelName
+    channelName: config.pusher.channelName,
+    username: getUsername( req )
   };
   
   res.render( 'index', viewData );
 } );
 
 app.post( '/new_message', function( req, res ) {
-
+    
   if( userLoggedIn( req ) === false ) {
     res.send( 401 );
     return;

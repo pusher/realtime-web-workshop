@@ -131,12 +131,12 @@ It's a good idea to keep configuation in one place rather than have the same con
 Create a `config.json` file passing in the Pusher app credentials and the channel name that we are subscribing to, and will be publishing on.
 
     {
-        "pusher": {
-            "appId": "YOUR_APP_ID",
-            "appKey": "YOUR_APP_KEY",
-            "appSecret": "YOUR_APP_SECRET",
-            "channelName: : "messages"
-        }
+      "pusher": {
+        "appId": "YOUR_APP_ID",
+        "appKey": "YOUR_APP_KEY",
+        "appSecret": "YOUR_APP_SECRET",
+        "channelName: : "messages"
+      }
     }
     
 Load the config file in `server.js`:
@@ -147,13 +147,13 @@ Load the config file in `server.js`:
     var config = JSON.parse( data );
 
 and pass the value of `pusher.appKey` through to the view:
-
-    var viewData = {
-        appKey: config.pusher.appKey,
-        channelName: config.pusher.channelName
-    };
     
     app.get( '/', function ( req, res ) {
+      var viewData = {
+        appKey: config.pusher.appKey,
+        channelName: config.pusher.channelName
+      };
+
       res.render( 'index', viewData );
     } );
     
@@ -191,12 +191,13 @@ Now we have the package let's create a `new_message` endpoint which triggers the
 
     var Pusher = require( 'node-pusher' );
 
+    var pusher = new Pusher( {
+      appId: config.pusher.appId,
+      key: config.pusher.appKey,
+      secret: config.pusher.appSecret
+    } );
+
     app.get( '/new_message', function( req, res ) {
-        var pusher = new Pusher( {
-          appId: config.pusher.appId,
-          key: config.pusher.appKey,
-          secret: config.pusher.appSecret
-        } );
         pusher.trigger( config.pusher.channelName, 'new_message', { text: 'hello' } );
         res.send( 200 );
     } );
@@ -241,14 +242,14 @@ Create the JavaScript to handle the button click end send the data via AJAX:
         var message = $.trim( userMessageEl.val() );
         if( message ) {
             $.ajax( {
-                url: '/new_message',
-                type: 'post',
-                data: {
-                    text: message
-                },
-                success: function() {
-                    userMessageEl.val('');
-                }
+              url: '/new_message',
+              type: 'post',
+              data: {
+                  text: message
+              },
+              success: function() {
+                  userMessageEl.val('');
+              }
             });
         }
         
@@ -262,26 +263,26 @@ We next need to update the `/new_message` to receive the `POST` AJAX call with `
 We should also put some scaffolding in place to verify and sanitise the data:
 
     var pusher = new Pusher( {
-          appId: config.pusher.appId,
-          key: config.pusher.appKey,
-          secret: config.pusher.appSecret
-        } );
+      appId: config.pusher.appId,
+      key: config.pusher.appKey,
+      secret: config.pusher.appSecret
+    } );
   
     app.post( '/new_message', function( req, res ) {
         
-        var text = req.body.text;
-        if( verifyMessage( text ) === false ) {
-            req.send( 400 );
-            return;
-        }
-        
-        pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
-        res.send( 200 );
+      var text = req.body.text;
+      if( verifyMessage( text ) === false ) {
+        req.send( 400 );
+        return;
+      }
+      
+      pusher.trigger( config.pusher.channelName, 'new_message', { text: text } );
+      res.send( 200 );
         
     } );
     
     function verifyMessage( text ) {
-        return true;
+      return true;
     }
 
 ### That's it!
