@@ -53,7 +53,7 @@ Add the following to the file:
       res.sendfile( path.resolve(__dirname, 'index.html' ) );
     } );
     
-    app.listen( process.env.PORT );
+    app.listen( process.env.PORT || 5000 );
     
 This does the following:
 
@@ -78,7 +78,7 @@ And tell the server that's where the static files are served from. If we do this
     var app = express();
     app.use( express.static( __dirname + '/public' ) );
     
-    app.listen( process.env.PORT );
+    app.listen( process.env.PORT || 5000 );
     
 #### Views
 
