@@ -20,5 +20,5 @@ Details for each exercies can be found within the `exercises` directory. They co
 
 You can get the code for the exercises in two back-end languages right now:
 
-* [PHP](tree/php)
-* [node.js](tree/node)
+* [PHP](https://github.com/pusher/realtime-web-workshop/tree/php)
+* [node.js](https://github.com/pusher/realtime-web-workshop/tree/node)
